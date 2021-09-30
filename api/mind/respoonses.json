@@ -1,0 +1,14 @@
+{
+  "confusion": [
+    { "mood": 1, "text": "Huh?", "emoji": ":ryan-thinking:" },
+    { "mood": 1, "text": "What do you say?", "emoji": ":ryan-thinking:" },
+    { "mood": 2, "text": "What?", "emoji": ":ryan-stare:" },
+    { "mood": 2, "text": "What do you want?", "emoji": ":ryan-stare:" },
+    { "mood": 3, "text": "?", "emoji": ":ryan-rolling-eyes:" },
+    { "mood": 3, "text": "I don't get it", "emoji": ":ryan-rolling-eyes:" },
+    { "mood": 4, "text": "Ugh, what?", "emoji": ":ryan-stab:" },
+    { "mood": 4, "text": "I don't have time, I'm making soup!", "emoji": ":ryan-stab:" },
+    { "mood": 5, "text": "??!", "emoji": ":ryan-destroy:" },
+    { "mood": 5, "text": "What the hell do you want?", "emoji": ":ryan-destroy:" }
+  ]
+}

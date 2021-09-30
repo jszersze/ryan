@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const config = require('./config.json');
 const db = mongoose.connection;
 
 const model = {
@@ -7,7 +6,7 @@ const model = {
   End: require('./models/end')
 };
 
-mongoose.connect(config.main.mongo_path, {
+mongoose.connect(process.env.MONGO_PATH, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,

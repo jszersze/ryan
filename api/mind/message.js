@@ -1,6 +1,11 @@
+const responses = require('responses');
 class Message {
   constructor() {
     this.response_type = 'in_channel';
+  }
+
+  respondConfused(mood) {
+
   }
 
   /**
