@@ -5,7 +5,9 @@
   "description": "Ask Ryan Anything!",
   "main": "api/index.js",
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node api/index.js",
+    "start:remote": "./bin/start.sh",
+    "stop": "./bin/stop.sh"
   },
   "repository": {
     "type": "git",

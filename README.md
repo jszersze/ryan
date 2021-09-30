@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/ryan-robo.png" alt="ryan" width=72>
+  <img src="img/ryan-robo.png" alt="ryan" width=64>
 
   <h3 align="center">Ryan Bot</h3>
 
