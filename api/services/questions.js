@@ -9,6 +9,6 @@ module.exports = (app) => {
     }
 
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
-    res.end(reply);
+    res.end(JSON.stringify(reply));
   });
 };
