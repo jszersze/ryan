@@ -15,7 +15,7 @@ module.exports = (app) => {
       ]
     }
 
-    res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(reply));
   });
 };
