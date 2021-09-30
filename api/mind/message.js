@@ -1,4 +1,4 @@
-class Messages {
+class Message {
   constructor() {
 
   }
