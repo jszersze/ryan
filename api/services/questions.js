@@ -4,10 +4,10 @@ module.exports = (app) => {
     console.log(req.body);
 
     const reply = {
+      response_type: 'in_channel',
       blocks: [
         {
           type: 'section',
-          response_type: "in_channel",
           text: {
             type: "mrkdwn",
             text: ':ryan-eats-soup: Not now. Making soup...'
