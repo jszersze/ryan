@@ -10,7 +10,7 @@ module.exports = (app) => {
           type: 'section',
           text: {
             type: "mrkdwn",
-            text: ':ryan-eats-soup: Not now. Making soup...'
+            text: 'Not now. Making soup... :ryan-eats-soup:'
           }
         }
       ]
