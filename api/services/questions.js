@@ -7,6 +7,7 @@ module.exports = (app) => {
       blocks: [
         {
           type: 'section',
+          response_type: "in_channel",
           text: {
             type: "mrkdwn",
             text: ':ryan-eats-soup: Not now. Making soup...'
