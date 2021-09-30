@@ -1,22 +1,13 @@
+const message = require('../mind/message');
+const process = require('../mind/process');
+
 module.exports = (app) => {
   app.post('/question', (req, res) => {
 
-    console.log(req.body);
-
-    const reply = {
-      response_type: 'in_channel',
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: "mrkdwn",
-            text: 'Not now. Making soup... :ryan-eats-soup:'
-          }
-        }
-      ]
-    }
+    console.log('1', req.params);
+    console.log('2', req.query);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(reply));
+    res.end(message.reply('Not now. Making soup... :ryan-eats-soup:'));
   });
 };
