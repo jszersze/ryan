@@ -4,10 +4,12 @@ const process = require('../mind/process');
 module.exports = (app) => {
   app.post('/question', (req, res) => {
 
+    const reply = process.message(req.query);
+
     console.log('1', req);
     console.log('2', req.query);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(message.reply('Not now. Making soup... :ryan-eats-soup:'));
+    res.end(message.reply(reply));
   });
 };

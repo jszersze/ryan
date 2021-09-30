@@ -11,7 +11,7 @@ const fs = require('fs');
  */
 const questions = require('./services/questions');
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 app.use(express.static('public'));
 
 /**
