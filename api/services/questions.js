@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  app.get('/question', (req, res) => {
+  app.post('/question', (req, res) => {
 
     console.log(req.body);
 
