@@ -1,5 +1,14 @@
 module.exports = (app) => {
   app.get('/question', (req, res) => {
-    res.end('Not now. Making soup...');
+
+    console.log(req.body);
+
+    const reply = {
+      response_type: 'in_channel',
+      text: 'Not now. Making soup...'
+    }
+
+    res.res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.end(reply);
   });
 };
