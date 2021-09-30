@@ -13,4 +13,4 @@ class Process {
   }
 }
 
-module.exports = Process;
+module.exports = new Process();
