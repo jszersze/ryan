@@ -8,7 +8,7 @@ module.exports = (app) => {
       text: 'Not now. Making soup...'
     }
 
-    res.res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end(reply);
   });
 };
