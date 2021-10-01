@@ -65,6 +65,8 @@ class Process {
     if (!query?.text) {
       this.makeMore('angry');
 
+      console.log('query was:', query);
+
       return this.query.queryResponse(this.mood, 'confused');
     }
 
@@ -79,8 +81,6 @@ class Process {
     const doc = this.nlp(text);
     const nouns = doc.nouns().toSingular().out('array');
     const questions = doc.sentences().isQuestion().out('array');
-
-    console.log(text);
 
     if (text.trim().toLowerCase() === 'reset ryan-bot') {
       return this.handleResetRyan();
