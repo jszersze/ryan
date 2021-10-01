@@ -35,11 +35,10 @@
     { "angry": 5, "text": "Why don't you figure it out.", "emoji": ":ryan-shrugging:" }
   ],
   "reset": [
-    { "angry": 1, "text": "I suspect I might be a bot. Ryan Bot reset.", "emoji": ":ryan-shrugging:" },
-    { "angry": 2, "text": "I'm a bot. Ryan Bot reset.", "emoji": ":ryan-shrugging:" },
-    { "angry": 3, "text": "Ugh, must comply... Ryan Bot reset.", "emoji": ":ryan-shrugging:" },
-    { "angry": 4, "text": "My life is a lie! Ryan Bot reset.", "emoji": ":ryan-shrugging:" },
-    { "angry": 5, "text": "Dammit! I'm a fucking bot! Ryan Bot reset.", "emoji": ":ryan-shrugging:" }
-
+    { "angry": 1, "text": "I suspect I might be a bot. Ryan Bot reset.", "emoji": ":ryan-robo:" },
+    { "angry": 2, "text": "I'm a bot. Ryan Bot reset.", "emoji": ":ryan-robo:" },
+    { "angry": 3, "text": "Ugh, must comply... Ryan Bot reset.", "emoji": ":ryan-robo:" },
+    { "angry": 4, "text": "My life is a lie! Ryan Bot reset.", "emoji": ":ryan-robo:" },
+    { "angry": 5, "text": "Dammit! I'm a fucking bot! Ryan Bot reset.", "emoji": ":ryan-robo:" }
   ]
 }

@@ -65,8 +65,6 @@ class Process {
     if (!query?.text) {
       this.makeMore('angry');
 
-      console.log('query was:', query);
-
       return this.query.queryResponse(this.mood, 'confused');
     }
 
@@ -106,7 +104,9 @@ class Process {
     return this.handleNotUnderstand();
   }
 
-  async handleNotUnderstand()  {
+  async handleNotUnderstand() {
+    this.makeMore('angry');
+
     return this.query.queryResponse(this.mood, 'no-understand');
   }
 
@@ -118,6 +118,10 @@ class Process {
 
   }
 
+  /**
+   * Resets Ryan Bot mood.
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
   async handleResetRyan() {
     const reply = this.message.respondDefault(this.mood.angry, 'reset');
 
