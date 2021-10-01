@@ -33,5 +33,13 @@
     { "angry": 3, "text": "Um, I don't know.", "emoji": ":ryan-shrugging:" },
     { "angry": 4, "text": "...", "emoji": ":ryan-shrugging:" },
     { "angry": 5, "text": "Why don't you figure it out.", "emoji": ":ryan-shrugging:" }
+  ],
+  "reset": [
+    { "angry": 1, "text": "I suspect I might be a bot.", "emoji": ":ryan-shrugging:" },
+    { "angry": 2, "text": "I'm a bot.", "emoji": ":ryan-shrugging:" },
+    { "angry": 3, "text": "Ugh, must comply...", "emoji": ":ryan-shrugging:" },
+    { "angry": 4, "text": "My life is a lie!", "emoji": ":ryan-shrugging:" },
+    { "angry": 5, "text": "Dammit! I'm a fucking bot!", "emoji": ":ryan-shrugging:" }
+
   ]
 }

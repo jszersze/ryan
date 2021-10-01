@@ -80,6 +80,10 @@ class Process {
     const nouns = doc.nouns().toSingular().out('array');
     const questions = doc.sentences().isQuestion().out('array');
 
+    if (text === 'reset ryan-bot') {
+      return this.handleResetRyan();
+    }
+
     this.debug.input_text = text;
     this.debug.nouns = [];
     this.debug.questions = [];
@@ -110,6 +114,18 @@ class Process {
 
   async handleDefinition() {
 
+  }
+
+  async handleResetRyan() {
+    const reply = this.message.respondDefault(this.mood.angry, 'reset');
+
+    this.mood = {
+      angry: 1,
+      dramatic: 1,
+      drunk: 1
+    }
+
+    return reply;
   }
 }
 
