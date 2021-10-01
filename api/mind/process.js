@@ -80,7 +80,7 @@ class Process {
     const nouns = doc.nouns().toSingular().out('array');
     const questions = doc.sentences().isQuestion().out('array');
 
-    if (text === 'reset ryan-bot') {
+    if (text.trim().toLowerCase() === 'reset ryan-bot') {
       return this.handleResetRyan();
     }
 
