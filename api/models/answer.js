@@ -3,6 +3,7 @@ const type_schema = mongoose.Schema.Types;
 
 const schema = new mongoose.Schema({
   text: String,
+  tags: [String],
   emoji: String,
   source: String,
   created_at: { type: Date, required: true, default: Date.now },

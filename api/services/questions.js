@@ -2,13 +2,22 @@ const message = require('../mind/message');
 const process = require('../mind/process');
 
 module.exports = function (app) {
-  app.post('/question', (req, res) => {
+  app.post('/question', async (req, res) => {
+    const reply = await process.accept(req.query);
 
-    const reply = process.message(req.query);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(message.reply(reply));
+  });
 
-    console.log('1', req.params);
-    console.log('2', req.body);
-    console.log('3', req.query);
+  app.post('/debug', async (req, res) => {
+    const reply = await process.accept(req.query, true);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(message.replyDebug(reply));
+  });
+
+  app.get('/question', async (req, res) => {
+    const reply = await process.accept(req.query);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(message.reply(reply));

@@ -1,6 +1,5 @@
 const config = require('./config.json');
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 const https = require('https');
@@ -13,8 +12,8 @@ require('dotenv').config();
  */
 const questions = require('./services/questions');
 
-// app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 /**
  * Middleware

@@ -3,7 +3,7 @@ const db = mongoose.connection;
 
 const model = {
   Answer: require('./models/answer'),
-  End: require('./models/end')
+  Response: require('./models/response')
 };
 
 mongoose.connect(process.env.MONGO_PATH, {
