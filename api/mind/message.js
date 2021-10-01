@@ -5,13 +5,14 @@ class Message {
   }
 
   /**
-   * Returns a random confused response based on angry.
+   * Returns a random default response based on type and angry.
    * @param {Number} angry
    * @returns {{angry:Number, text:String, emoji: String}}
    */
-  respondConfused(angry) {
-    const replies = responses?.confusion;
-    const reply = replies.filter(item => item.angry === angry);
+  respondDefault(angry, type) {
+    console.log(angry, type);
+    const replies = responses?.[type];
+    const reply = replies?.filter(item => item.angry === angry);
     const max = reply.length;
     const random = Math.floor(Math.random() * max);
 

@@ -9,7 +9,7 @@ class Query {
   /**
    * Queries responses by angry, dramatic or drunk by type.
    * @param {('angry' | 'dramatic' | 'drunk')} mood
-   * @param {('confused' | 'unknown' | 'confirmation' | 'refuse')} type
+   * @param {('confused' | 'no-understand' | 'unknown' | 'confirmation' | 'refuse')} type
    * @returns {{angry:String, text:String: emoji:String}}
    */
   async queryResponse(mood, type) {
@@ -21,16 +21,20 @@ class Query {
     });
 
     if (!responses?.length) {
-      return this.message.respondConfused(mood.angry);
+      return this.message.respondDefault(mood.angry, type);
     }
 
     return responses;
   }
 
-  queryAnswer(tag) {
-    const answer = db.Answer.findOne({ tags: [tag] });
+  async queryAnswer(tag) {
+    const answer = await db.Answer.findOne({ tags: [tag] });
 
     return answer;
+  }
+
+  generateAnswer() {
+
   }
 }
 

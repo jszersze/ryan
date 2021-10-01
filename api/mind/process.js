@@ -1,4 +1,5 @@
 const compromise = require('compromise');
+const compromiseSentences = require('compromise-sentences');
 const message = require('./message');
 const query = require('./query');
 class Process {
@@ -20,6 +21,12 @@ class Process {
     }
 
     this.subject = {};
+
+    this.extend();
+  }
+
+  extend() {
+    this.nlp.extend(compromiseSentences);
   }
 
   /**
@@ -52,32 +59,57 @@ class Process {
    * @returns {{mood:Number, text:String, emoji:String}}
    */
   async accept(query) {
+    /**
+     * There is no text, so automatic interrupt to reply confused.
+     */
     if (!query?.text) {
       this.makeMore('angry');
 
       return this.query.queryResponse(this.mood, 'confused');
     }
 
-    this.segment(query.text);
-
-    return { text: 'Not now. Making soup...', emoji: ':ryan-eats-soup:', ...this.debug };
+    return this.segment(query.text);
   }
 
   /**
    * Segments text into text chunks.
    * @param {String} text
    */
-  segment(text) {
+  async segment(text) {
     const doc = this.nlp(text);
     const nouns = doc.nouns().toSingular().out('array');
+    const questions = doc.sentences().isQuestion().out('array');
 
     this.debug.input_text = text;
     this.debug.nouns = [];
+    this.debug.questions = [];
 
     for (const item of nouns) {
       this.query.queryAnswer(item);
       this.debug.nouns.push(item);
     }
+
+    for (const item of questions) {
+      this.debug.questions.push(item);
+    }
+
+    if (questions?.length) {
+      return this.handleQuestion();
+    }
+
+    return this.handleNotUnderstand();
+  }
+
+  async handleNotUnderstand()  {
+    return this.query.queryResponse(this.mood, 'no-understand');
+  }
+
+  async handleQuestion() {
+    return this.query.queryResponse(this.mood, 'refuse');
+  }
+
+  async handleDefinition() {
+
   }
 }
 

@@ -11,5 +11,27 @@
     { "angry": 5, "text": "??!", "emoji": ":ryan-destroy:" },
     { "angry": 5, "text": "What the hell do you want?", "emoji": ":ryan-destroy:" },
     { "angry": 5, "text": "I hate you, go away!", "emoji": ":ryan-destroy:" }
+  ],
+  "no-understand": [
+    { "angry": 1, "text": "I don't understand what you are saying.", "emoji": ":ryan-shrugging:" },
+    { "angry": 2, "text": "I don't understand.", "emoji": ":ryan-shrugging:" },
+    { "angry": 3, "text": "Huh?", "emoji": ":ryan-shrugging:" },
+    { "angry": 4, "text": "What?", "emoji": ":ryan-shrugging:" },
+    { "angry": 5, "text": "I don't have time for this. Making soup!", "emoji": ":ryan-shrugging:" }
+  ],
+  "refuse": [
+    { "angry": 1, "text": "No can do!", "emoji": ":ryan-thumbs-up:" },
+    { "angry": 1, "text": "Nope", "emoji": ":ryan-thinking:" },
+    { "angry": 2, "text": "I don't think so.", "emoji": ":ryan-stare:" },
+    { "angry": 3, "text": "No", "emoji": ":ryan-stare:" },
+    { "angry": 4, "text": "No, I don't work for you!", "emoji": ":ryan-double-stab:" },
+    { "angry": 5, "text": "Never in a hundred years I will do that!", "emoji": ":ryan-destroy:" }
+  ],
+  "unknown": [
+    { "angry": 1, "text": "I don't know the answer to that.", "emoji": ":ryan-shrugging:" },
+    { "angry": 2, "text": "I don't know.", "emoji": ":ryan-shrugging:" },
+    { "angry": 3, "text": "Um, I don't know.", "emoji": ":ryan-shrugging:" },
+    { "angry": 4, "text": "...", "emoji": ":ryan-shrugging:" },
+    { "angry": 5, "text": "Why don't you figure it out.", "emoji": ":ryan-shrugging:" }
   ]
 }
