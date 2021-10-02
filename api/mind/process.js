@@ -2,11 +2,13 @@ const compromise = require('compromise');
 const compromiseSentences = require('compromise-sentences');
 const message = require('./message');
 const query = require('./query');
+const greeting = require('./greeting');
 class Process {
   constructor() {
     this.nlp = compromise;
     this.message = message;
     this.query = query;
+    this.greeting = greeting;
     this.debug = {};
 
     this.mood = {
@@ -20,7 +22,8 @@ class Process {
       drunk: 1
     }
 
-    this.subject = {};
+    this.thought = {};
+    this.memory = {};
 
     this.extend();
   }
@@ -80,21 +83,25 @@ class Process {
     const nouns = doc.nouns().toSingular().out('array');
     const questions = doc.sentences().isQuestion().out('array');
 
-    if (text.trim().toLowerCase() === 'reset ryan-bot') {
+    if (this.checkReset(text)) {
       return this.handleResetRyan();
     }
 
-    this.debug.input_text = text;
-    this.debug.nouns = [];
-    this.debug.questions = [];
+    if (this.checkGreeting(text)) {
+      return this.handleGreeting(text);
+    }
+
+    this.thought.input_text = text;
+    this.thought.nouns = [];
+    this.thought.questions = [];
 
     for (const item of nouns) {
       this.query.queryAnswer(item);
-      this.debug.nouns.push(item);
+      this.thought.nouns.push(item);
     }
 
     for (const item of questions) {
-      this.debug.questions.push(item);
+      this.thought.questions.push(item);
     }
 
     if (questions?.length) {
@@ -104,10 +111,47 @@ class Process {
     return this.handleNotUnderstand();
   }
 
+  /**
+   * Checks to see if input text is reset.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkReset(text) {
+    if (text.trim().toLowerCase() === 'reset ryan-bot') {
+      return true;
+    }
+  }
+
+  /**
+   * Checks to see if input text is greeting.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkGreeting(text) {
+    return this.greeting.checkIfGreeting(text);
+  }
+
+  /**
+   * Handles not understanding.
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
   async handleNotUnderstand() {
     this.makeMore('angry');
 
     return this.query.queryResponse(this.mood, 'no-understand');
+  }
+
+  /**
+   * Handles greeting response.
+   * @param {String} text
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
+  async handleGreeting(text) {
+    this.makeLess('angry');
+
+    const greeting = this.greeting.replyWithGreeting(text);
+
+    return { mood: this.mood, text: greeting.text, emoji: greeting.emoji };
   }
 
   async handleQuestion() {
@@ -132,6 +176,23 @@ class Process {
     }
 
     return reply;
+  }
+
+  /**
+   * Remembers last interaction and stores it by thought/user_name.
+   * @param {String} user_name
+   */
+  remember(user_name) {
+    if (this.memory[user_name]) {
+      this.memory[user_name] = [];
+    }
+
+    this.memory.push(this.thought);
+    this.thought = {};
+
+    if (this.memory[user_name].length === 5) {
+      this.memory[user_name].pop();
+    }
   }
 }
 
