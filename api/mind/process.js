@@ -25,6 +25,9 @@ class Process {
     this.thought = {};
     this.memory = {};
 
+    /** @type {Number} */
+    this.memory_limit = 5;
+
     this.extend();
   }
 
@@ -71,7 +74,19 @@ class Process {
       return this.query.queryResponse(this.mood, 'confused');
     }
 
-    return this.segment(query.text);
+    /**
+     * Extract some basic input information.
+     */
+    this.thought.interlocutor = query?.user_name;
+    this.thought.input_text = query.text;
+
+    const reply = await this.segment(query.text);
+
+    this.thought.reply = reply;
+
+    this.remember();
+
+    return reply;
   }
 
   /**
@@ -79,36 +94,40 @@ class Process {
    * @param {String} text
    */
   async segment(text) {
-    const doc = this.nlp(text);
-    const nouns = doc.nouns().toSingular().out('array');
-    const questions = doc.sentences().isQuestion().out('array');
-
     if (this.checkReset(text)) {
       return this.handleResetRyan();
+    }
+
+    this.tokenize(text);
+
+    if (this.checkContext(text)) {
+      return this.handleContext(text);
     }
 
     if (this.checkGreeting(text)) {
       return this.handleGreeting(text);
     }
 
-    this.thought.input_text = text;
-    this.thought.nouns = [];
-    this.thought.questions = [];
-
-    for (const item of nouns) {
-      this.query.queryAnswer(item);
-      this.thought.nouns.push(item);
+    if (this.checkQuestion(text)) {
+      return this.handleQuestion(text);
     }
 
-    for (const item of questions) {
-      this.thought.questions.push(item);
-    }
-
-    if (questions?.length) {
-      return this.handleQuestion();
+    if (this.checkDefinition(text)) {
+      return this.handleDefinition(text);
     }
 
     return this.handleNotUnderstand();
+  }
+
+  /**
+   * Pre-processes the input.
+   * @param {String} text
+   */
+  tokenize(text) {
+    const doc = this.nlp(text);
+    const subject = doc.sentences().subjects();
+
+    this.thought.subject = subject;
   }
 
   /**
@@ -123,12 +142,73 @@ class Process {
   }
 
   /**
+   * Checks to see previous context of input.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkContext(text) {
+    const interlocutor = this.thought.interlocutor;
+
+    if (this.memory?.[interlocutor]) {
+      /**
+       * Check for repetition.
+       */
+      for (const thought of this.memory[interlocutor]) {
+        if (thought.input_text === text) {
+          this.thought.deja_vu = this.thought.deja_vu ? ++this.thought.deja_vu : 1;
+        }
+      }
+
+      if (this.thought.deja_vu >= 1) {
+        return true;
+      }
+    }
+  }
+
+  /**
    * Checks to see if input text is greeting.
    * @param {String} text
    * @returns {Boolean}
    */
   checkGreeting(text) {
     return this.greeting.checkIfGreeting(text);
+  }
+
+  /**
+   * Checks to see if the input is a question.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkQuestion(text) {
+    const doc = this.nlp(text);
+    const questions = doc.sentences().isQuestion().out('array');
+
+    this.thought.questions = [];
+
+    for (const item of questions) {
+      this.thought.questions.push(item);
+    }
+
+    if (questions?.length) {
+      return true;
+    }
+  }
+
+  /**
+   * Checks to see if the input is a definition.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkDefinition(text) {
+    const doc = this.nlp(text);
+    const nouns = doc.nouns().toSingular().out('array');
+
+    this.thought.nouns = [];
+
+    for (const item of nouns) {
+      this.query.queryAnswer(item);
+      this.thought.nouns.push(item);
+    }
   }
 
   /**
@@ -139,6 +219,21 @@ class Process {
     this.makeMore('angry');
 
     return this.query.queryResponse(this.mood, 'no-understand');
+  }
+
+  /**
+   * Handles instances when context prevails.
+   * @param {String} text
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
+  async handleContext(text) {
+    this.makeMore('angry');
+
+    if (this.checkQuestion(text)) {
+      this.thought.is_question = true;
+    }
+
+    return this.query.queryResponse(this.mood, 'deja-vu', this.thought);
   }
 
   /**
@@ -154,10 +249,24 @@ class Process {
     return { mood: this.mood, text: greeting.text, emoji: greeting.emoji };
   }
 
-  async handleQuestion() {
+  /**
+   * Handles processing and replying to a question.
+   * @param {String} text
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
+  async handleQuestion(text) {
+    const answer = await this.query.queryAnswer(this.mood, text, this.thought);
+
+    if (!answer) {
+      return this.query.queryResponse(this.mood, 'dont-know');
+    }
+
     return this.query.queryResponse(this.mood, 'refuse');
   }
 
+  /**
+   * Handles processing and replying to a definition.
+   */
   async handleDefinition() {
 
   }
@@ -180,19 +289,33 @@ class Process {
 
   /**
    * Remembers last interaction and stores it by thought/user_name.
-   * @param {String} user_name
    */
-  remember(user_name) {
-    if (this.memory[user_name]) {
-      this.memory[user_name] = [];
+  remember() {
+    const interlocutor = this.thought.interlocutor;
+
+    if (!this.memory[interlocutor]) {
+      this.memory[interlocutor] = [];
     }
 
-    this.memory.push(this.thought);
+    this.memory[interlocutor].unshift(this.thought);
+
+    /**
+     * Empty thought.
+     */
     this.thought = {};
 
-    if (this.memory[user_name].length === 5) {
-      this.memory[user_name].pop();
+    if (this.memory[interlocutor].length === this.memory_limit) {
+      this.memory[interlocutor].pop();
     }
+  }
+
+  getSnapshot() {
+    const snapshot = {
+      mood: this.mood,
+      memory: this.memory
+    }
+
+    return snapshot;
   }
 }
 

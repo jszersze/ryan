@@ -19,6 +19,16 @@
     { "angry": 4, "text": "What?", "emoji": ":ryan-shrugging:" },
     { "angry": 5, "text": "I don't have time for this. Making soup!", "emoji": ":ryan-shrugging:" }
   ],
+  "deja-vu": [
+    { "angry": 1, "context": "question", "text": "Did you already ask me this?", "emoji": ":ryan-thinking:" },
+    { "angry": 1, "text": "Did you already tell me this?", "emoji": ":ryan-thinking:" },
+    { "angry": 2, "text": "Deja vo!", "emoji": ":ryan-thinking:" },
+    { "angry": 3, "text": "You already told me that.", "emoji": ":ryan-facepalming:" },
+    { "angry": 3, "context": "question", "text": "You already asked me about that.", "emoji": ":ryan-facepalming:" },
+    { "angry": 4, "text": "Stop!", "emoji": ":ryan-aneurism:" },
+    { "angry": 4, "context": "question", "text": "Stop asking me that!", "emoji": ":ryan-aneurism:" },
+    { "angry": 5, "text": "Again? That's it, I'm leaving to make soup!", "emoji": ":ryan-eats-soup:" }
+  ],
   "refuse": [
     { "angry": 1, "text": "No can do!", "emoji": ":ryan-thumbs-up:" },
     { "angry": 1, "text": "Nope", "emoji": ":ryan-thinking:" },
@@ -27,7 +37,7 @@
     { "angry": 4, "text": "No, I don't work for you!", "emoji": ":ryan-double-stab:" },
     { "angry": 5, "text": "Never in a hundred years I will do that!", "emoji": ":ryan-destroy:" }
   ],
-  "unknown": [
+  "dont-know": [
     { "angry": 1, "text": "I don't know the answer to that.", "emoji": ":ryan-shrugging:" },
     { "angry": 2, "text": "I don't know.", "emoji": ":ryan-shrugging:" },
     { "angry": 3, "text": "Um, I don't know.", "emoji": ":ryan-shrugging:" },

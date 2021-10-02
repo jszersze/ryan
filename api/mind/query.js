@@ -9,10 +9,11 @@ class Query {
   /**
    * Queries responses by angry, dramatic or drunk by type.
    * @param {('angry' | 'dramatic' | 'drunk')} mood
-   * @param {('confused' | 'no-understand' | 'unknown' | 'confirmation' | 'refuse')} type
+   * @param {('confused' | 'no-understand' | 'deja-vu' | 'dont-know' | 'confirmation' | 'refuse')} type
+   * @param {*} [thought]
    * @returns {{angry:String, text:String: emoji:String}}
    */
-  async queryResponse(mood, type) {
+  async queryResponse(mood, type, thought) {
     const responses = await db.Response.find({
       angry: mood.angry,
       dramatic: mood.dramatic,
@@ -21,20 +22,27 @@ class Query {
     });
 
     if (!responses?.length) {
-      return this.message.respondDefault(mood.angry, type);
+      return this.message.respondDefault(mood.angry, type, thought);
     }
 
     return responses;
   }
 
-  async queryAnswer(tag) {
+  /**
+   * Queries answer to a question.
+   * @param {*} mood
+   * @param {*} tag
+   * @param {*} thought
+   * @returns
+   */
+  async queryAnswer(mood, tag, thought) {
     const answer = await db.Answer.findOne({ tags: [tag] });
 
+    if (!answer?.length && thought) {
+      thought.has_answer = false;
+    }
+
     return answer;
-  }
-
-  generateAnswer() {
-
   }
 }
 

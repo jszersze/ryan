@@ -7,16 +7,27 @@ class Message {
   /**
    * Returns a random default response based on type and angry.
    * @param {Number} angry
+   * @param {String} type
+   * @param {*} thought
    * @returns {{angry:Number, text:String, emoji: String}}
    */
-  respondDefault(angry, type) {
-    console.log(angry, type);
-    const replies = responses?.[type];
-    const reply = replies?.filter(item => item.angry === angry);
-    const max = reply.length;
+  respondDefault(angry, type, thought) {
+    const options = responses?.[type];
+
+    let replies = options?.filter(item => item.angry === angry);
+
+    if (thought?.is_question) {
+      const context_replies = replies?.filter(item => item.context === 'question');
+
+      if (context_replies.length) {
+        replies = context_replies;
+      }
+    }
+
+    const max = replies.length;
     const random = Math.floor(Math.random() * max);
 
-    return reply[random];
+    return replies[random];
   }
 
   /**
@@ -25,6 +36,8 @@ class Message {
    * @returns {String}
    */
   reply(message) {
+    const text = `${message?.text} ${message?.emoji}`;
+
     const reply = {
       response_type: this.response_type,
       blocks: [
@@ -32,7 +45,7 @@ class Message {
           type: 'section',
           text: {
             type: "mrkdwn",
-            text: `${message.text} ${message.emoji}`
+            text: text.trim()
           }
         }
       ]
@@ -44,9 +57,12 @@ class Message {
   /**
    * Formats outgoing message to be compatible with debugging.
    * @param {{text:String, emoji:String}} message
+   * @param {{mood:*, memory:*}} snapshot
    * @returns {String}
    */
-   replyDebug(message) {
+   replyDebug(message, snapshot) {
+    const text = `${message?.text} ${message?.emoji}`;
+
     const reply = {
       response_type: this.response_type,
       blocks: [
@@ -54,11 +70,11 @@ class Message {
           type: 'section',
           text: {
             type: "mrkdwn",
-            text: `${message.text} ${message.emoji}`
+            text: text.trim()
           }
         }
       ],
-      debug: message
+      debug: snapshot
     }
 
     return JSON.stringify(reply);
