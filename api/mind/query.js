@@ -8,10 +8,10 @@ class Query {
 
   /**
    * Queries responses by angry, dramatic or drunk by type.
-   * @param {('angry' | 'dramatic' | 'drunk')} mood
-   * @param {('confused' | 'no-understand' | 'deja-vu' | 'dont-know' | 'confirmation' | 'refuse')} type
+   * @param {Mood} mood
+   * @param {ResponseType} type
    * @param {*} [thought]
-   * @returns {{angry:String, text:String: emoji:String}}
+   * @returns {{mood: Mood, text: String: emoji: String}}
    */
   async queryResponse(mood, type, thought) {
     const responses = await db.Response.find({
@@ -22,7 +22,7 @@ class Query {
     });
 
     if (!responses?.length) {
-      return this.message.respondDefault(mood.angry, type, thought);
+      return this.message.respondDefault(mood, type, thought);
     }
 
     return responses;
@@ -30,7 +30,7 @@ class Query {
 
   /**
    * Queries answer to a question.
-   * @param {*} mood
+   * @param {Mood} mood
    * @param {*} tag
    * @param {*} thought
    * @returns
@@ -47,8 +47,8 @@ class Query {
 
   /**
    * Stores a definition from a statement.
-   * @param {*} mood
-   * @param {*} text
+   * @param {Mood} mood
+   * @param {String} text
    * @param {*} thought
    */
   async storeDefinition(mood, text, thought) {
@@ -57,8 +57,8 @@ class Query {
 
   /**
    * Performs an action from a request.
-   * @param {*} mood
-   * @param {*} text
+   * @param {Mood} mood
+   * @param {String} text
    * @param {*} thought
    * @returns
    */

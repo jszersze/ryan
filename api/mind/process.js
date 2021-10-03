@@ -4,6 +4,7 @@ const compromisePennTags = require('compromise-penn-tags');
 const message = require('./message');
 const query = require('./query');
 const greeting = require('./greeting');
+
 class Process {
   constructor() {
     this.nlp = compromise;
@@ -12,6 +13,7 @@ class Process {
     this.greeting = greeting;
     this.debug = {};
 
+    /** @type {Mood} */
     this.mood = {
       /** @type {Number} number 1 - 5 */
       angry: 1,
@@ -39,7 +41,7 @@ class Process {
 
   /**
    * Makes Ryan progressively more angry, dramatic or drunk.
-   * @param {('angry' | 'dramatic' | 'drunk')} state
+   * @param {MoodState} state
    */
   makeMore(state) {
     ++this.mood[state];
@@ -51,7 +53,7 @@ class Process {
 
   /**
    * Makes Ryan progressively less angry, dramatic or drunk.
-   * @param {('angry' | 'dramatic' | 'drunk')} state
+   * @param {MoodState} state
    */
   makeLess(state) {
     --this.mood[state];
@@ -64,7 +66,7 @@ class Process {
   /**
    * Accepts and processes incoming message.
    * @param {String} query
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async accept(query) {
     /**
@@ -85,7 +87,6 @@ class Process {
     const reply = await this.segment(query.text);
 
     this.thought.reply = reply;
-
     this.remember();
 
     return reply;
@@ -108,6 +109,10 @@ class Process {
 
     if (this.checkGreeting(text)) {
       return this.handleGreeting(text);
+    }
+
+    if (this.checkFarewell(text)) {
+      return this.handleFarewell(text);
     }
 
     if (this.checkQuestion(text)) {
@@ -183,6 +188,15 @@ class Process {
   }
 
   /**
+   * Checks to see if input text is farewell.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+   checkFarewell(text) {
+    return this.greeting.checkIfFarewell(text);
+  }
+
+  /**
    * Checks to see if the input is a question.
    * @param {String} text
    * @returns {Boolean}
@@ -234,7 +248,7 @@ class Process {
 
   /**
    * Handles not understanding.
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleNotUnderstand() {
     this.makeMore('angry');
@@ -245,7 +259,7 @@ class Process {
   /**
    * Handles instances when context prevails.
    * @param {String} text
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleContext(text) {
     this.makeMore('angry');
@@ -260,7 +274,7 @@ class Process {
   /**
    * Handles greeting response.
    * @param {String} text
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleGreeting(text) {
     this.makeLess('angry');
@@ -271,9 +285,22 @@ class Process {
   }
 
   /**
+   * Handles farewell response.
+   * @param {String} text
+   * @returns {{mood: Mood, text: String, emoji: String}}
+   */
+   async handleFarewell(text) {
+    this.makeLess('angry');
+
+    const greeting = this.greeting.replyWithFarewell(text);
+
+    return { mood: this.mood, text: greeting.text, emoji: greeting.emoji };
+  }
+
+  /**
    * Handles processing and replying to a question.
    * @param {String} text
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleQuestion(text) {
     const answer = await this.query.queryAnswer(this.mood, text, this.thought);
@@ -288,7 +315,7 @@ class Process {
   /**
    * Handles processing and replying to an action request.
    * @param {String} text
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleAction(text) {
     const action = await this.query.performAction(this.mood, text, this.thought);
@@ -303,7 +330,7 @@ class Process {
   /**
    * Handles processing and replying to a definition.
    * @param {String} text
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleDefinition(text) {
     const definition = await this.query.storeDefinition(this.mood, text, this.thought);
@@ -317,10 +344,10 @@ class Process {
 
   /**
    * Resets Ryan Bot mood.
-   * @returns {{mood:Number, text:String, emoji:String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleResetRyan() {
-    const reply = this.message.respondDefault(this.mood.angry, 'reset');
+    const reply = this.message.respondDefault(this.mood, 'reset');
 
     this.mood = {
       angry: 1,

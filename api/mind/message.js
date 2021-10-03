@@ -1,20 +1,27 @@
-const responses = require('./responses.json');
+const compromise = require('compromise');
+const compromiseSentences = require('compromise-sentences');
+const responses = require('./terms/responses.json');
 class Message {
   constructor() {
+    this.nlp = compromise;
     this.response_type = 'in_channel';
+  }
+
+  extend() {
+    this.nlp.extend(compromiseSentences);
   }
 
   /**
    * Returns a random default response based on type and angry.
-   * @param {Number} angry
+   * @param {Mood} mood
    * @param {String} type
    * @param {*} thought
-   * @returns {{angry:Number, text:String, emoji: String}}
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
-  respondDefault(angry, type, thought) {
+  respondDefault(mood, type, thought) {
     const options = responses?.[type];
 
-    let replies = options?.filter(item => item.angry === angry);
+    let replies = options?.filter(item => item.angry === mood.angry);
 
     if (thought?.is_question) {
       const context_replies = replies?.filter(item => item.context === 'question');
@@ -26,17 +33,36 @@ class Message {
 
     const max = replies.length;
     const random = Math.floor(Math.random() * max);
+    const reply = replies[random];
 
-    return replies[random];
+    return { mood, text: reply.text, emoji: reply.emoji };
+  }
+
+  /**
+   * Formats the returned reply.
+   * @param {Mood} mood
+   * @param {String} text
+   * @returns {String}
+   */
+  formatReply(mood, text) {
+    const doc = this.nlp(text);
+
+    let formatted = text;
+
+    if (mood.drunk <= 3) {
+      formatted = doc.firstTerms().toTitleCase().all().text();
+    }
+
+    return formatted;
   }
 
   /**
    * Formats outgoing message to be compatible with Slack.
-   * @param {{text:String, emoji:String}} message
+   * @param {{mood: Mood, text: String, emoji: String}} message
    * @returns {String}
    */
   reply(message) {
-    const text = `${message?.text} ${message?.emoji}`;
+    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji}`;
 
     const reply = {
       response_type: this.response_type,
@@ -56,12 +82,12 @@ class Message {
 
   /**
    * Formats outgoing message to be compatible with debugging.
-   * @param {{text:String, emoji:String}} message
-   * @param {{mood:*, memory:*}} snapshot
+   * @param {{mood: Mood, text: String, emoji: String}} message
+   * @param {{mood: Mood, memory: *}} snapshot
    * @returns {String}
    */
    replyDebug(message, snapshot) {
-    const text = `${message?.text} ${message?.emoji}`;
+    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji}`;
 
     const reply = {
       response_type: this.response_type,
