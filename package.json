@@ -29,8 +29,9 @@
   "dependencies": {
     "@types/express": "4.17.1",
     "body-parser": "^1.19.0",
-    "compromise": "13.11.4",
+    "compromise-penn-tags": "0.0.2",
     "compromise-sentences": "0.3.0",
+    "compromise": "13.11.4",
     "dotenv": "10.0.0",
     "express": "4.17.1",
     "mongoose": "5.11.13",

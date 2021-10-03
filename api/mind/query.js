@@ -44,6 +44,33 @@ class Query {
 
     return answer;
   }
+
+  /**
+   * Stores a definition from a statement.
+   * @param {*} mood
+   * @param {*} text
+   * @param {*} thought
+   */
+  async storeDefinition(mood, text, thought) {
+
+  }
+
+  /**
+   * Performs an action from a request.
+   * @param {*} mood
+   * @param {*} text
+   * @param {*} thought
+   * @returns
+   */
+  async performAction(mood, text, thought) {
+    const action = null;
+
+    if (!action.length && thought) {
+      thought.can_perform_action = false;
+    }
+
+    return action;
+  }
 }
 
 module.exports = new Query();

@@ -1,5 +1,6 @@
 const compromise = require('compromise');
 const compromiseSentences = require('compromise-sentences');
+const compromisePennTags = require('compromise-penn-tags');
 const message = require('./message');
 const query = require('./query');
 const greeting = require('./greeting');
@@ -33,6 +34,7 @@ class Process {
 
   extend() {
     this.nlp.extend(compromiseSentences);
+    this.nlp.extend(compromisePennTags);
   }
 
   /**
@@ -112,6 +114,10 @@ class Process {
       return this.handleQuestion(text);
     }
 
+    if (this.checkAction(text)) {
+      return this.handleAction(text);
+    }
+
     if (this.checkDefinition(text)) {
       return this.handleDefinition(text);
     }
@@ -126,8 +132,10 @@ class Process {
   tokenize(text) {
     const doc = this.nlp(text);
     const subject = doc.sentences().subjects();
+    const tags = doc.pennTags({ offset:true });
 
     this.thought.subject = subject;
+    this.thought.tags = tags;
   }
 
   /**
@@ -192,6 +200,19 @@ class Process {
     if (questions?.length) {
       return true;
     }
+  }
+
+  /**
+   * Checks to see if the input is an action request.
+   * @param {String} text
+   * @returns {Boolean}
+   */
+  checkAction(text) {
+    const doc = this.nlp(text);
+
+    /**
+     * TODO: Come up with a way to check for action request.
+     */
   }
 
   /**
@@ -265,10 +286,33 @@ class Process {
   }
 
   /**
-   * Handles processing and replying to a definition.
+   * Handles processing and replying to an action request.
+   * @param {String} text
+   * @returns {{mood:Number, text:String, emoji:String}}
    */
-  async handleDefinition() {
+  async handleAction(text) {
+    const action = await this.query.performAction(this.mood, text, this.thought);
 
+    if (!action) {
+      return this.query.queryResponse(this.mood, 'refuse');
+    }
+
+    return action;
+  }
+
+  /**
+   * Handles processing and replying to a definition.
+   * @param {String} text
+   * @returns {{mood:Number, text:String, emoji:String}}
+   */
+  async handleDefinition(text) {
+    const definition = await this.query.storeDefinition(this.mood, text, this.thought);
+
+    if (!definition) {
+      return this.query.queryResponse(this.mood, 'no-understand');
+    }
+
+    return definition;
   }
 
   /**
