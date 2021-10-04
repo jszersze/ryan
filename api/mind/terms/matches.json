@@ -1,0 +1,18 @@
+{
+  "is_you": [
+    "you're",
+    "you",
+    "your",
+    "yours"
+  ],
+  "is_interlocutor": [
+    "me",
+    "my"
+  ],
+  "is_we": [
+    "our",
+    "we are",
+    "we're",
+    "we"
+  ]
+}

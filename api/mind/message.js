@@ -15,7 +15,7 @@ class Message {
    * Returns a random default response based on type and angry.
    * @param {Mood} mood
    * @param {String} type
-   * @param {*} thought
+   * @param {Thought} thought
    * @returns {{mood: Mood, text: String, emoji: String}}
    */
   respondDefault(mood, type, thought) {
@@ -23,7 +23,7 @@ class Message {
 
     let replies = options?.filter(item => item.angry === mood.angry);
 
-    if (thought?.is_question) {
+    if (thought?.context?.is_question) {
       const context_replies = replies?.filter(item => item.context === 'question');
 
       if (context_replies.length) {

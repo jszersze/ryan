@@ -3,7 +3,9 @@ const compromiseSentences = require('compromise-sentences');
 const compromisePennTags = require('compromise-penn-tags');
 const message = require('./message');
 const query = require('./query');
-const greeting = require('./greeting');
+const greeting = require('./handlers/greeting');
+const question = require('./handlers/question');
+const action = require('./handlers/action');
 
 class Process {
   constructor() {
@@ -11,20 +13,18 @@ class Process {
     this.message = message;
     this.query = query;
     this.greeting = greeting;
+    this.question = question;
+    this.action = action;
     this.debug = {};
 
     /** @type {Mood} */
     this.mood = {
-      /** @type {Number} number 1 - 5 */
       angry: 1,
-
-      /** @type {Number} number 1 - 5 */
       dramatic: 1,
-
-      /** @type {Number} number 1 - 5 */
       drunk: 1
     }
 
+    /** @type {Thought} */
     this.thought = {};
     this.memory = {};
 
@@ -83,6 +83,7 @@ class Process {
      */
     this.thought.interlocutor = query?.user_name;
     this.thought.input_text = query.text;
+    this.thought.context = {};
 
     const reply = await this.segment(query.text);
 
@@ -136,8 +137,8 @@ class Process {
    */
   tokenize(text) {
     const doc = this.nlp(text);
-    const subject = doc.sentences().subjects();
-    const tags = doc.pennTags({ offset:true });
+    const subject = doc.sentences().subjects().text();
+    const tags = doc.pennTags({ offset: true });
 
     this.thought.subject = subject;
     this.thought.tags = tags;
@@ -223,10 +224,17 @@ class Process {
    */
   checkAction(text) {
     const doc = this.nlp(text);
+    const verbs = doc.verbs().out('array');
 
-    /**
-     * TODO: Come up with a way to check for action request.
-     */
+    this.thought.verbs = [];
+
+    for (const item of verbs) {
+      this.thought.verbs.push(item);
+    }
+
+    if (verbs?.length) {
+      return true;
+    }
   }
 
   /**
@@ -265,7 +273,7 @@ class Process {
     this.makeMore('angry');
 
     if (this.checkQuestion(text)) {
-      this.thought.is_question = true;
+      this.thought.context.is_question = true;
     }
 
     return this.query.queryResponse(this.mood, 'deja-vu', this.thought);
@@ -303,6 +311,7 @@ class Process {
    * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleQuestion(text) {
+    const question = this.question.process(this.mood, text, this.thought);
     const answer = await this.query.queryAnswer(this.mood, text, this.thought);
 
     if (!answer) {
@@ -318,7 +327,8 @@ class Process {
    * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleAction(text) {
-    const action = await this.query.performAction(this.mood, text, this.thought);
+    const action = this.action.process(this.mood, text, this.thought);
+    const task = await this.query.performAction(this.mood, text, this.thought);
 
     if (!action) {
       return this.query.queryResponse(this.mood, 'refuse');

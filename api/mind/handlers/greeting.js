@@ -1,8 +1,8 @@
 const compromise = require('compromise');
 const compromiseSentences = require('compromise-sentences');
-const greetings = require('./terms/greetings.json');
-const farewells = require('./terms/farewells.json');
-const time = require('./senses/time');
+const greetings = require('../terms/greetings.json');
+const farewells = require('../terms/farewells.json');
+const time = require('../senses/time');
 
 class Greeting {
   constructor() {

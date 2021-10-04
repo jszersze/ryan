@@ -10,7 +10,7 @@ class Query {
    * Queries responses by angry, dramatic or drunk by type.
    * @param {Mood} mood
    * @param {ResponseType} type
-   * @param {*} [thought]
+   * @param {Thought} [thought]
    * @returns {{mood: Mood, text: String: emoji: String}}
    */
   async queryResponse(mood, type, thought) {
@@ -32,7 +32,7 @@ class Query {
    * Queries answer to a question.
    * @param {Mood} mood
    * @param {*} tag
-   * @param {*} thought
+   * @param {Thought} thought
    * @returns
    */
   async queryAnswer(mood, tag, thought) {
@@ -49,7 +49,7 @@ class Query {
    * Stores a definition from a statement.
    * @param {Mood} mood
    * @param {String} text
-   * @param {*} thought
+   * @param {Thought} thought
    */
   async storeDefinition(mood, text, thought) {
 
@@ -59,13 +59,13 @@ class Query {
    * Performs an action from a request.
    * @param {Mood} mood
    * @param {String} text
-   * @param {*} thought
+   * @param {Thought} thought
    * @returns
    */
   async performAction(mood, text, thought) {
     const action = null;
 
-    if (!action.length && thought) {
+    if (!action?.length && thought) {
       thought.can_perform_action = false;
     }
 
