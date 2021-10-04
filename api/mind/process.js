@@ -137,7 +137,7 @@ class Process {
    */
   tokenize(text) {
     const doc = this.nlp(text);
-    const subject = doc.sentences().subjects().text();
+    const subject = doc?.sentences?.().subjects?.().text?.();
     const tags = doc.pennTags({ offset: true });
 
     this.thought.subject = subject;
