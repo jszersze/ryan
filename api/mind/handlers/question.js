@@ -80,7 +80,7 @@ class Question {
     if (!thought.context.is_you) {
       const answer = await this.query.queryAnswer(thought.subject);
 
-      thought.context.found_answer = !!answer.length;
+      thought.context.found_answer = !!answer?.length;
 
       return answer;
     }
