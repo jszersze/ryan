@@ -9,7 +9,7 @@ class Query {
   /**
    * Queries responses by angry, dramatic or drunk by type.
    * @param {Mood} mood
-   * @param {ResponseType} type
+   * @param {ReplyResponseType} type
    * @param {Thought} [thought]
    * @returns {{mood: Mood, text: String: emoji: String}}
    */
@@ -29,20 +29,46 @@ class Query {
   }
 
   /**
+   * Gets personal information.
+   *  @param {String} subject
+   */
+  async queryPersonal(subject) {
+    const personal = await db.Personal.find({ word: subject });
+
+    return personal;
+  }
+
+  /**
    * Queries answer to a question.
-   * @param {Mood} mood
-   * @param {*} tag
-   * @param {Thought} thought
+   * @param {String} subject
    * @returns
    */
-  async queryAnswer(mood, tag, thought) {
-    const answer = await db.Answer.findOne({ tags: [tag] });
+  async queryAnswer(subject) {
+    const answer = await db.Answer.findOne({ word: subject });
 
-    if (!answer?.length && thought) {
-      thought.has_answer = false;
-    }
+    // if (!answer?.length && thought) {
+    //   thought.has_answer = false;
+    // }
 
     return answer;
+  }
+
+  /**
+   * Stores a personal definition.
+   * @param {String} subject
+   * @param {String} definition
+   * @param {String} value
+   */
+  async storePersonal(subject, definition, value) {
+    const personal = new db.Personal({
+      word: subject?.toLocaleLowerCase(),
+      definition: definition?.toLocaleLowerCase(),
+      value: value?.toLocaleLowerCase()
+    });
+
+    const result = await personal.save();
+
+    return result;
   }
 
   /**

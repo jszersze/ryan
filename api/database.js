@@ -3,6 +3,7 @@ const db = mongoose.connection;
 
 const model = {
   Answer: require('./models/answer'),
+  Personal: require('./models/personal'),
   Response: require('./models/response')
 };
 

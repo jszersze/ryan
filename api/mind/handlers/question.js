@@ -1,12 +1,16 @@
 const compromise = require('compromise');
 const compromiseSentences = require('compromise-sentences');
 const compromisePennTags = require('compromise-penn-tags');
+const detection = require('./detection');
 const matches = require('../terms/matches.json');
+const query = require('../query');
 
 class Question {
   constructor() {
     this.nlp = compromise;
+    this.detection = detection;
     this.matches = matches;
+    this.query = query;
   }
 
   extend() {
@@ -15,71 +19,68 @@ class Question {
   }
 
   /**
+   * Processes the response answer.
+   * @param {Mood} mood
+   * @param {} personal
+   * @param {Thought} thought
+   * @returns {{mood: Mood, text: String, emoji: String}}
+   */
+  processPersonalAnswer(mood, personal, thought) {
+    const answer = personal[0];
+    const word = this.nlp(answer).nouns().isPlural();
+    const is = this.nlp('is');
+
+    if (word) {
+      is.nouns().toPlural();
+    }
+
+    const text = this.nlp(`My ${answer.word} ${is.text()} ${answer.definition}`);
+
+    const reply = {
+      mood,
+      text: text.sentences().toStatement().text(),
+      emoji: answer.emoji
+    }
+
+    return reply;
+  }
+
+  /**
    * Processes question.
    * @param {Mood} mood
    * @param {String} text
    * @param {Thought} thought
+   * @returns {{mood: Mood, text: String, emoji: String}}
    */
-  process(mood, text, thought) {
-    const doc = this.nlp(text);
-    const phrases = doc.split().out('array');
+  async process(mood, text, thought) {
+    this.detection.checkIsYou(text, thought);
+    this.detection.checkIsInterlocutor(text, thought);
+    this.detection.checkIsWe(text, thought);
+    this.detection.checkPeople(text, thought);
+
+    this.detection.getNouns(text, thought);
+    this.detection.refineSubject(thought);
 
     /**
-     * Check for is_you.
+     * Look for personal piece of information.
      */
-    for (const phrase of phrases) {
-      const sub_doc = this.nlp(phrase);
+    if (thought.context.is_you) {
+      const personal = await this.query.queryPersonal(thought.subject);
 
-      for (const word of this.matches.is_you) {
-        const match = sub_doc.match(word).text();
+      thought.context.found_answer = !!personal.length;
 
-        if (match) {
-          thought.context.is_you = true;
-        }
-      }
+      return this.processPersonalAnswer(mood, personal, thought);
     }
 
     /**
-     * Check for is_interlocutor.
+     * Look for generic information.
      */
-     for (const phrase of phrases) {
-      const sub_doc = this.nlp(phrase);
+    if (!thought.context.is_you) {
+      const answer = await this.query.queryAnswer(thought.subject);
 
-      for (const word of this.matches.is_interlocutor) {
-        const match = sub_doc.match(word).text();
+      thought.context.found_answer = !!answer.length;
 
-        if (match) {
-          thought.context.is_interlocutor = true;
-        }
-      }
-    }
-
-    /**
-     * Check for is_we.
-     */
-     for (const phrase of phrases) {
-      const sub_doc = this.nlp(phrase);
-
-      for (const word of this.matches.is_we) {
-        const match = sub_doc.match(word).text();
-
-        if (match) {
-          thought.context.is_you = true;
-          thought.context.is_interlocutor = true;
-        }
-      }
-    }
-
-    /**
-     * Check for people
-     */
-    thought.context.people = [];
-
-    for (const phrase of phrases) {
-      const sub_doc = this.nlp(phrase);
-      const people = sub_doc.people().out('array');
-
-      thought.context.people = thought.context.people.concat(people);
+      return answer;
     }
   }
 }

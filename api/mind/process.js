@@ -6,6 +6,7 @@ const query = require('./query');
 const greeting = require('./handlers/greeting');
 const question = require('./handlers/question');
 const action = require('./handlers/action');
+const statement = require('./handlers/statement');
 
 class Process {
   constructor() {
@@ -15,6 +16,7 @@ class Process {
     this.greeting = greeting;
     this.question = question;
     this.action = action;
+    this.statement = statement;
     this.debug = {};
 
     /** @type {Mood} */
@@ -109,23 +111,33 @@ class Process {
     }
 
     if (this.checkGreeting(text)) {
+      this.thought.context.is_greeting = true;
+
       return this.handleGreeting(text);
     }
 
     if (this.checkFarewell(text)) {
+      this.thought.context.is_farewell = true;
+
       return this.handleFarewell(text);
     }
 
     if (this.checkQuestion(text)) {
+      this.thought.context.is_question = true;
+
       return this.handleQuestion(text);
     }
 
     if (this.checkAction(text)) {
+      this.thought.context.is_action_request = true;
+
       return this.handleAction(text);
     }
 
-    if (this.checkDefinition(text)) {
-      return this.handleDefinition(text);
+    if (this.checkStatement(text)) {
+      this.thought.context.is_statement = true;
+
+      return this.handleStatement(text);
     }
 
     return this.handleNotUnderstand();
@@ -138,9 +150,11 @@ class Process {
   tokenize(text) {
     const doc = this.nlp(text);
     const subject = doc?.sentences?.().subjects?.().text?.();
+    const topic = doc?.sentences?.().topics?.().text?.();
     const tags = doc.pennTags({ offset: true });
 
     this.thought.subject = subject;
+    this.thought.topic = topic;
     this.thought.tags = tags;
   }
 
@@ -224,7 +238,7 @@ class Process {
    */
   checkAction(text) {
     const doc = this.nlp(text);
-    const verbs = doc.verbs().out('array');
+    const verbs = doc.delete('#Copula').verbs().out('array');
 
     this.thought.verbs = [];
 
@@ -238,19 +252,22 @@ class Process {
   }
 
   /**
-   * Checks to see if the input is a definition.
+   * Checks to see if the input is a statement.
    * @param {String} text
    * @returns {Boolean}
    */
-  checkDefinition(text) {
+  checkStatement(text) {
     const doc = this.nlp(text);
     const nouns = doc.nouns().toSingular().out('array');
 
     this.thought.nouns = [];
 
     for (const item of nouns) {
-      this.query.queryAnswer(item);
       this.thought.nouns.push(item);
+    }
+
+    if (nouns?.length) {
+      return true;
     }
   }
 
@@ -311,14 +328,16 @@ class Process {
    * @returns {{mood: Mood, text: String, emoji: String}}
    */
   async handleQuestion(text) {
-    const question = this.question.process(this.mood, text, this.thought);
-    const answer = await this.query.queryAnswer(this.mood, text, this.thought);
+    const answer = await this.question.process(this.mood, text, this.thought);
 
-    if (!answer) {
+    /**
+     * Generic don't know.
+     */
+    if (!this.thought.context.found_answer) {
       return this.query.queryResponse(this.mood, 'dont-know');
     }
 
-    return this.query.queryResponse(this.mood, 'refuse');
+    return answer;
   }
 
   /**
@@ -338,18 +357,20 @@ class Process {
   }
 
   /**
-   * Handles processing and replying to a definition.
+   * Handles processing and replying to a statement.
    * @param {String} text
    * @returns {{mood: Mood, text: String, emoji: String}}
    */
-  async handleDefinition(text) {
-    const definition = await this.query.storeDefinition(this.mood, text, this.thought);
+  async handleStatement(text) {
+    const statement = await this.statement.process(this.mood, text, this.thought);
 
-    if (!definition) {
+    if (!statement) {
       return this.query.queryResponse(this.mood, 'no-understand');
     }
 
-    return definition;
+    return this.query.queryResponse(this.mood, 'confirm');
+
+    return statement;
   }
 
   /**

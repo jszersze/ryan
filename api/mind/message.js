@@ -62,7 +62,7 @@ class Message {
    * @returns {String}
    */
   reply(message) {
-    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji}`;
+    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji ? message.emoji : ''}`;
 
     const reply = {
       response_type: this.response_type,
@@ -87,7 +87,7 @@ class Message {
    * @returns {String}
    */
    replyDebug(message, snapshot) {
-    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji}`;
+    const text = `${this.formatReply(message?.mood, message?.text)} ${message?.emoji ? message.emoji : ''}`;
 
     const reply = {
       response_type: this.response_type,

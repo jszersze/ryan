@@ -13,7 +13,7 @@
 
 /**
  * Ryan's response type
- * @typedef {('confused' | 'no-understand' | 'deja-vu' | 'dont-know' | 'confirmation' | 'refuse')} ResponseType
+ * @typedef {('confused' | 'no-understand' | 'deja-vu' | 'dont-know' | 'confirmation' | 'refuse')} ReplyResponseType
  */
 
 /**
@@ -22,6 +22,7 @@
  * @property {String} interlocutor
  * @property {String} input_text
  * @property {String} subject
+ * @property {String} definition - Derived definition of a subject.
  * @property {[{text: String, terms: [{text: String, penn: String, tags: [String]}]}]} tags
  * @property {ThoughtContext} context
  * @property {Number} deja_vu - Indicates number of times Ryan thinks he was told the same information.
@@ -38,5 +39,7 @@
  * @property {Boolean} is_farewell
  * @property {Boolean} is_you - Identifies if context is about Ryan
  * @property {Boolean} is_interlocutor - Identifies if context is about interlocutor
+ * @property {Boolean} found_answer
+ * @property {Boolean} performed_action
  * @property {[String]} people
  */

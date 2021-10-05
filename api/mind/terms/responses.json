@@ -50,5 +50,25 @@
     { "angry": 3, "text": "Ugh, must comply... Ryan Bot reset.", "emoji": ":ryan-robo:" },
     { "angry": 4, "text": "My life is a lie! Ryan Bot reset.", "emoji": ":ryan-robo:" },
     { "angry": 5, "text": "Dammit! I'm a fucking bot! Ryan Bot reset.", "emoji": ":ryan-robo:" }
+  ],
+  "confirm": [
+    { "angry": 1, "text": "Ok", "emoji": ":ryan-thumbs-up:" },
+    { "angry": 2, "text": "Got it.", "emoji": ":ryan-thinking:" },
+    { "angry": 3, "text": "Aha", "emoji": ":ryan-thinking:" },
+    { "angry": 4, "text": "Fine!", "emoji": ":ryan-hobo-stab:" },
+    { "angry": 5, "text": "Ugh, fine.", "emoji": ":ryan-rolling-eyes:" }
+  ],
+  "deny": [
+    { "angry": 1, "text": "Nope", "emoji": ":ryan-thinking:" },
+    { "angry": 2, "text": "No", "emoji": ":ryan-stare:" },
+    { "angry": 3, "text": "No", "emoji": ":ryan-stab:" },
+    { "angry": 4, "text": "No", "emoji": ":ryan-double-stab:" },
+    { "angry": 5, "text": "No!", "emoji": ":ryan-facepalm:" }
+  ],
+  "agree": [
+
+  ],
+  "disagree": [
+
   ]
 }
