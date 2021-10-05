@@ -69,7 +69,7 @@ class Question {
 
       thought.context.found_answer = !!personal.length;
 
-      if (personal) {
+      if (personal.length) {
         return this.processPersonalAnswer(mood, personal, thought);
       }
     }
